@@ -1,11 +1,11 @@
-button {
+.grid-button {
     border: none;
     background-color: white;
     aspect-ratio: 1 / 1; 
     font-size: 25px;
 }
 
-button:hover {
+.grid-button:hover {
     background-color: rgb(253, 242, 206);
     cursor: pointer;
 }

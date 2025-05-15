@@ -2,7 +2,7 @@ import "./Field.css";
 
 function Field({ value, onClick }) {
     return (
-        <button onClick={onClick}>{value}</button>
+        <button className="grid-button" onClick={onClick}>{value}</button>
     )
 }
 

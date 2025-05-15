@@ -16,7 +16,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        use: [
+          'style-loader', 
+          'css-loader',
+        ],
       },
     ],
   },
@@ -30,6 +33,7 @@ module.exports = {
   ],
   devServer: {
     static: './dist',
+    historyApiFallback: true,
     port: 3000,
   },
 };

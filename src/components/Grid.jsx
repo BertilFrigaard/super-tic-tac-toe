@@ -5,7 +5,7 @@ import Field from "./Field";
 function Grid({ fields, available, overlayLabel, onClick }) {
     return (
         <div className="grid-wrapper">
-            <div className={available ? "grid-overlay available" : "grid-overlay unavailable"}> 
+            <div className={available ? "grid-overlay grid-available" : "grid-overlay grid-unavailable"}> 
                 {overlayLabel && 
                     <p className="grid-label">{overlayLabel}</p>
                 }
