@@ -73,7 +73,7 @@ function OfflineGamePage() {
 
     return (
         <div className="page-root">
-            <h1>Super Grid</h1>
+            <h1>Super Tic-Tac-Toe</h1>
             {gameState === GAMESTATE.PLAYING && 
                 <h3>It's player {turn}'s turn</h3>
             }
