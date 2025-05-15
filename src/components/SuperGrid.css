@@ -1,0 +1,11 @@
+.super-grid-container {
+    --size: 40%;
+    margin: 30px auto;
+    width: var(--size);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Ensures 3 equal columns */
+    grid-template-rows: repeat(3, 1fr); 
+    gap: 3px;
+    background-color: black;
+
+}
