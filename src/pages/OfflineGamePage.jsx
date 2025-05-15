@@ -1,22 +1,18 @@
-import "./GamePage.css"
+import "./OfflineGamePage.css"
 
 import { useState } from "react";
 import SuperGrid from "../components/SuperGrid";
 
-const PLAYER = {
-    X: true,
-    O: false,
-}
 const GAMESTATE = {
     PLAYING: 0,
     OVER: 1,
 }
 
-function GamePage() {
+function OfflineGamePage() {
     const [grids, setGrids] = useState(Array(9).fill(Array(9).fill(null)));
     const [gridResults, setGridResults] = useState(Array(9).fill(null));
     const [availableGrids, setAvailableGrids] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8]);
-    const [turn, setTurn] = useState(PLAYER.X);
+    const [turn, setTurn] = useState("X");
     const [gameState, setGameState] = useState(GAMESTATE.PLAYING);
 
     const notify = (msg) => {
@@ -39,20 +35,20 @@ function GamePage() {
             return;
         }
 
-        if (grids[grid][field] != null) {
+        if (grids[grid][field]) {
             notify("This field is occupied!");
             return;
         }
 
         let newGrids = grids.map(row => [...row]);
-        newGrids[grid][field] = turn ? "X" : "O";
+        newGrids[grid][field] = turn;
         setGrids(() => {
 
             const winner = calculateWinner(newGrids[grid]);
             let newGridResults = gridResults.map(x => x);
 
-            if (winner != null) {
-                newGridResults[grid] = winner === "X" ? PLAYER.X : PLAYER.O;
+            if (winner) {
+                newGridResults[grid] = winner;
             }
 
             setGridResults(newGridResults);
@@ -63,7 +59,7 @@ function GamePage() {
                 setGameState(GAMESTATE.OVER);
                 setAvailableGrids([]);
             } else {
-                setTurn(!turn);
+                setTurn(turn === "X" ? "O" : "X");
                 if (newGridResults[field] != null) {
                     setAvailableGrids(newGridResults.map((v, i) => (v == null ? i : null)));
                 } else {
@@ -79,10 +75,10 @@ function GamePage() {
         <div className="page-root">
             <h1>Super Grid</h1>
             {gameState === GAMESTATE.PLAYING && 
-                <h3>It's player {turn ? "X" : "O"}'s turn</h3>
+                <h3>It's player {turn}'s turn</h3>
             }
             {gameState === GAMESTATE.OVER && 
-                <h3>Player {turn ? "X" : "O"} has won!</h3>
+                <h3>Player {turn} has won!</h3>
             }
             <SuperGrid grids={grids} availableGrids={availableGrids} gridResults={gridResults} onClick={handleClick}/>
         </div>
@@ -111,4 +107,4 @@ function calculateWinner(fields) {
 }
 
 
-export default GamePage;
+export default OfflineGamePage;

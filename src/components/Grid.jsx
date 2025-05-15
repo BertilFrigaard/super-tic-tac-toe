@@ -6,11 +6,8 @@ function Grid({ fields, available, overlayLabel, onClick }) {
     return (
         <div className="grid-wrapper">
             <div className={available ? "grid-overlay available" : "grid-overlay unavailable"}> 
-                {overlayLabel === true && 
-                    <p className="grid-label">X</p>
-                }
-                {overlayLabel === false && 
-                    <p className="grid-label">O</p>
+                {overlayLabel && 
+                    <p className="grid-label">{overlayLabel}</p>
                 }
             </div>
             <div className="grid-background">

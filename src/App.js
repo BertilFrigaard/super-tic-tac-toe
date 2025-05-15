@@ -1,9 +1,9 @@
-import GamePage from "./pages/GamePage.jsx";
+import OfflineGamePage from "./pages/OfflineGamePage.jsx";
 import HomePage from "./pages/HomePage.jsx";
 
 function App() {
   return (
-    <GamePage />
+    <OfflineGamePage />
   );
 }
 
