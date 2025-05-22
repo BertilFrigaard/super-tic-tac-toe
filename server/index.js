@@ -2,6 +2,7 @@ const http = require("http");
 const WebSocket = require("ws");
 const express = require("express");
 const cors = require("cors");
+const protocol = require("./protocol");
 
 const app = express();
 app.use(cors());
@@ -11,14 +12,7 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (socket) => {
-    console.log("Connection recieved");
-});
-
-app.post("/createGame", (req, res) => {
-    res.status(201).json({
-        name: "Bertil",
-        score: 200,
-    });
+    protocol.handleClient(socket);
 });
 
 server.listen(3001, () => {
