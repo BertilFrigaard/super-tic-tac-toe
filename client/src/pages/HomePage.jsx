@@ -1,71 +1,113 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./HomePage.css";
 import Popup from "../components/Popup";
-
-const GAMESTATE = {
-    IDLE: 0,
-    LOADING: 1,
-    AWAITING_OPPONENT: 2,
-    ENTER_JOIN_CODE: 3,
-}
+import { GAMESTATE, SOCKET_URL } from "../constants/GAMESTATE";
+import { SocketContext } from "../contexts/SocketContext";
+import { useNavigate } from "react-router";
 
 function HomePage() {
+    const [socket, setSocket] = useContext(SocketContext);
+
     const [gameState, setGameState] = useState(GAMESTATE.IDLE);
-    const [socket, setSocket] = useState(null);
+    const [joinCode, setJoinCode] = useState("");
     const [gameId, setGameId] = useState(null);
+
+    const navigate = useNavigate();
 
     const notify = (msg) => {
         console.log("Dialog: " + msg);
-    }
+    };
 
-    const onJoinGameClick = () => {
+    const onShowJoinPopupClick = () => {
         if (socket != null) {
             notify("ERROR: Socket already open (socket != null)");
             return;
         }
         setGameState(GAMESTATE.ENTER_JOIN_CODE);
-    }
+    };
 
     const onCreateGameClick = () => {
         if (socket != null) {
             notify("ERROR: Socket already open (socket != null)");
             return;
         }
-        setGameState(GAMESTATE.LOADING);
-        setSocket(new WebSocket("http://localhost:3001/createGame"));
-    }
+        setGameState(GAMESTATE.CREATING_GAME);
+    };
+
+    const onJoinGameClick = () => {
+        if (socket != null) {
+            notify("ERROR: Socket already open (socket != null)");
+            return;
+        }
+        setGameState(GAMESTATE.JOINING_GAME);
+    };
 
     const ifIdle = (func, fallback) => {
         if (gameState == GAMESTATE.IDLE) {
             func();
-        } else if(fallback != null) {
+        } else if (fallback != null) {
             fallback();
         }
-    }
+    };
+
+    const isValidJoinCode = (joinCode) => {
+        if (joinCode.length != 6) {
+            return false;
+        }
+        return true;
+    };
+
+    useEffect(() => {
+        if (gameState == GAMESTATE.CREATING_GAME) {
+            setSocket(new WebSocket(SOCKET_URL));
+        } else if (gameState == GAMESTATE.JOINING_GAME) {
+            setSocket(new WebSocket(SOCKET_URL));
+        } else if (gameState == GAMESTATE.CANCELING) {
+            if (socket) {
+                socket.close();
+                setSocket(null);
+            } else {
+                setGameState(GAMESTATE.IDLE);
+            }
+        }
+    }, [gameState]);
 
     useEffect(() => {
         if (socket) {
-            socket.onopen = () => {
-                socket.send("create-game");
+            if (gameState == GAMESTATE.CREATING_GAME) {
+                socket.onopen = () => {
+                    setGameState(GAMESTATE.LOADING);
+                    socket.send("create-game");
+                };
+            } else if (gameState == GAMESTATE.JOINING_GAME) {
+                socket.onopen = () => {
+                    if (!isValidJoinCode(joinCode)) {
+                        notify("ERROR: Invalid join code");
+                        setGameState(GAMESTATE.CANCELING);
+                        return;
+                    }
+                    setGameState(GAMESTATE.LOADING);
+                    socket.send("join-game;" + joinCode);
+                };
             }
 
             socket.onmessage = (msg) => {
                 console.log("Recieved: " + msg.data);
 
                 const args = msg.data.split(";");
-                if (args[0] == "create-game") {
-                    if (gameState != GAMESTATE.LOADING) {
-                        notify("ERROR: Wrong gamestate for game creation (gameState != LOADING)");
-                        return;
-                    }
-                    if (args[1] != "success") {
-                        notify("ERROR: Something went wrong, try again (!success)");
-                        return;
-                    }
+                if (args[0] == "game-joined") {
                     setGameState(GAMESTATE.AWAITING_OPPONENT);
-                    setGameId(args[2]);
+                    setGameId(args[1]);
+                } else if (args[0] == "game-start") {
+                    notify("GAME STARTING");
+                    navigate("/PlayOnline");
+                } else if (args[0] == "error") {
+                    notify(args[1]);
+                    setGameState(GAMESTATE.CANCELING);
                 }
-            }           
+            };
+        } else {
+            setGameState(GAMESTATE.IDLE);
         }
     }, [socket]);
 
@@ -77,40 +119,87 @@ function HomePage() {
                 </div>
                 <div className="section online-section">
                     <h2>Play Online</h2>
-                    <button onClick={() => {ifIdle(onCreateGameClick)}}>Create Game</button>
-                    <button onClick={() => {ifIdle(onJoinGameClick)}}>Join Game</button>
+                    <button
+                        onClick={() => {
+                            ifIdle(onCreateGameClick);
+                        }}
+                    >
+                        Create Game
+                    </button>
+                    <button
+                        onClick={() => {
+                            ifIdle(onShowJoinPopupClick);
+                        }}
+                    >
+                        Join Game
+                    </button>
                 </div>
                 <div className="section offline-section">
                     <h2>Play Offline</h2>
-                    <button onClick={() => {ifIdle(() => {location.href="/PlayOffline"})}}>Start Game</button>
+                    <button
+                        onClick={() => {
+                            ifIdle(() => {
+                                navigate("/PlayOffline");
+                            });
+                        }}
+                    >
+                        Start Game
+                    </button>
                 </div>
-                {gameState == GAMESTATE.AWAITING_OPPONENT &&
-                    <Popup title="Waiting for opponent" html={
-                        <>
-                            <p>The following code can be used to connect this game</p>
-                            <h3>{gameId}</h3>
-                            <button onClick={() => {notify("ERROR: Not implemented (Cancel AWAITING_OPPONENT)")}}>Cancel</button>
-                        </>
-                    } />
-                }
+                {gameState == GAMESTATE.AWAITING_OPPONENT && (
+                    <Popup
+                        title="Waiting for opponent"
+                        html={
+                            <>
+                                <p>
+                                    The following code can be used to connect
+                                    this game
+                                </p>
+                                <h3>{gameId}</h3>
+                                <button
+                                    onClick={() => {
+                                        setGameState(GAMESTATE.CANCELING);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </>
+                        }
+                    />
+                )}
 
-                {gameState == GAMESTATE.ENTER_JOIN_CODE && 
-                    <Popup title="Enter Join Code" html={
-                        <>
-                            <p>Enter the game code</p>
-                            <input placeholder="######"></input>
-                            <button onClick={() => {setGameState(GAMESTATE.IDLE)}}>Join</button>
-                            <button onClick={() => {setGameState(GAMESTATE.IDLE)}}>Cancel</button>
-                        </>
-                    } />
-                }
+                {gameState == GAMESTATE.ENTER_JOIN_CODE && (
+                    <Popup
+                        title="Enter Join Code"
+                        html={
+                            <>
+                                <p>Enter the game code</p>
+                                <input
+                                    placeholder="######"
+                                    value={joinCode}
+                                    onChange={(event) => {
+                                        setJoinCode(event.target.value);
+                                    }}
+                                ></input>
+                                <button onClick={onJoinGameClick}>Join</button>
+                                <button
+                                    onClick={() => {
+                                        setGameState(GAMESTATE.CANCELING);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </>
+                        }
+                    />
+                )}
             </main>
             <footer>
-                <p>	© 2025 Bertil Frigaard </p>
+                <p> © 2025 Bertil Frigaard </p>
                 {/* <p>Hej, mit navn er William jeg har lavet denne ting fordi jeg er så klog at jeg kan programmere :)</p> */}
             </footer>
         </>
-    )
+    );
 }
 
 export default HomePage;
