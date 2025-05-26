@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from "react";
 import SuperGrid from "../components/SuperGrid";
 import { SocketContext } from "../contexts/SocketContext";
 import { useNavigate } from "react-router";
+import { UseNotification } from "../contexts/NotificationContext";
 
 const GAMESTATE = {
     PLAYING: 0,
@@ -12,12 +13,12 @@ const GAMESTATE = {
 };
 
 function OnlineGamePage() {
+    const { addNotification } = UseNotification();
+
     const [socket, setSocket] = useContext(SocketContext);
     const [grids, setGrids] = useState(Array(9).fill(Array(9).fill(null)));
     const [gridResults, setGridResults] = useState(Array(9).fill(null));
-    const [availableGrids, setAvailableGrids] = useState([
-        0, 1, 2, 3, 4, 5, 6, 7, 8,
-    ]);
+    const [availableGrids, setAvailableGrids] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8]);
     const [turn, setTurn] = useState(false);
     const [gameState, setGameState] = useState(GAMESTATE.PLAYING);
 
@@ -29,7 +30,6 @@ function OnlineGamePage() {
             return;
         }
         socket.onmessage = (msg) => {
-            console.log("Recieved: " + msg.data);
             const args = msg.data.split(";");
             if (args[0] == "update") {
                 const jsonMsg = JSON.parse(args[1]);
@@ -52,7 +52,7 @@ function OnlineGamePage() {
     }, [socket]);
 
     const notify = (msg) => {
-        console.log("Dialog: " + msg);
+        addNotification(msg, 4000);
     };
 
     const handleClick = (grid, field) => {
@@ -66,20 +66,13 @@ function OnlineGamePage() {
             return;
         }
 
-        if (
-            grid < 0 ||
-            grid >= grids.length ||
-            field < 0 ||
-            field >= grids[0].length
-        ) {
+        if (grid < 0 || grid >= grids.length || field < 0 || field >= grids[0].length) {
             notify("ERROR: Something went wrong (Array out of bounds)");
             return;
         }
 
         if (!availableGrids.includes(grid)) {
-            notify(
-                "This grid is not available, place in a available grid instead!"
-            );
+            notify("This grid is not available, place in a available grid instead!");
             return;
         }
 
@@ -95,23 +88,13 @@ function OnlineGamePage() {
     return (
         <div className="page-root">
             <h1>Super Tic-Tac-Toe</h1>
-            {gameState === GAMESTATE.PLAYING && (
-                <h3>It's {turn ? "your" : "your opponent's"} turn</h3>
-            )}
-            {gameState === GAMESTATE.OVER && (
-                <h3>{turn ? "You have" : "Your opponent has"} won!</h3>
-            )}
-            {gameState === GAMESTATE.INTERRUPTED && (
-                <h3 className="error-txt">The game was interrupted</h3>
-            )}
+            {gameState === GAMESTATE.PLAYING && <h3>It's {turn ? "your" : "your opponent's"} turn</h3>}
+            {gameState === GAMESTATE.OVER && <h3>{turn ? "You have" : "Your opponent has"} won!</h3>}
+            {gameState === GAMESTATE.INTERRUPTED && <h3 className="error-txt">The game was interrupted</h3>}
             <div className="backdrop">
                 <SuperGrid
                     grids={getFilledGrids(grids, "X", "O")}
-                    availableGrids={
-                        turn && gameState == GAMESTATE.PLAYING
-                            ? availableGrids
-                            : []
-                    }
+                    availableGrids={turn && gameState == GAMESTATE.PLAYING ? availableGrids : []}
                     gridResults={getFilledGridResults(gridResults, "X", "O")}
                     onClick={handleClick}
                 />

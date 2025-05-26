@@ -4,9 +4,11 @@ import Popup from "../components/Popup";
 import { GAMESTATE, SOCKET_URL } from "../constants/GAMESTATE";
 import { SocketContext } from "../contexts/SocketContext";
 import { useNavigate } from "react-router";
+import { UseNotification } from "../contexts/NotificationContext";
 
 function HomePage() {
     const [socket, setSocket] = useContext(SocketContext);
+    const { addNotification } = UseNotification();
 
     const [gameState, setGameState] = useState(GAMESTATE.IDLE);
     const [joinCode, setJoinCode] = useState("");
@@ -15,7 +17,7 @@ function HomePage() {
     const navigate = useNavigate();
 
     const notify = (msg) => {
-        console.log("Dialog: " + msg);
+        addNotification(msg, 4000);
     };
 
     const onShowJoinPopupClick = () => {
@@ -154,10 +156,7 @@ function HomePage() {
                         title="Waiting for opponent"
                         html={
                             <>
-                                <p>
-                                    The following code can be used to connect
-                                    this game
-                                </p>
+                                <p>The following code can be used to connect this game</p>
                                 <h3>{gameId}</h3>
                                 <button
                                     onClick={() => {

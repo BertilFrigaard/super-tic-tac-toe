@@ -2,6 +2,7 @@ import "./OfflineGamePage.css";
 
 import { useState } from "react";
 import SuperGrid from "../components/SuperGrid";
+import { UseNotification } from "../contexts/NotificationContext";
 
 const GAMESTATE = {
     PLAYING: 0,
@@ -9,16 +10,16 @@ const GAMESTATE = {
 };
 
 function OfflineGamePage() {
+    const { addNotification } = UseNotification();
+
     const [grids, setGrids] = useState(Array(9).fill(Array(9).fill(null)));
     const [gridResults, setGridResults] = useState(Array(9).fill(null));
-    const [availableGrids, setAvailableGrids] = useState([
-        0, 1, 2, 3, 4, 5, 6, 7, 8,
-    ]);
+    const [availableGrids, setAvailableGrids] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8]);
     const [turn, setTurn] = useState("X");
     const [gameState, setGameState] = useState(GAMESTATE.PLAYING);
 
     const notify = (msg) => {
-        console.log("Dialog: " + msg);
+        addNotification(msg, 4000);
     };
 
     const handleClick = (grid, field) => {
@@ -27,20 +28,13 @@ function OfflineGamePage() {
             return;
         }
 
-        if (
-            grid < 0 ||
-            grid >= grids.length ||
-            field < 0 ||
-            field >= grids[0].length
-        ) {
+        if (grid < 0 || grid >= grids.length || field < 0 || field >= grids[0].length) {
             notify("ERROR: Something went wrong (Array out of bounds)");
             return;
         }
 
         if (!availableGrids.includes(grid)) {
-            notify(
-                "This grid is not available, place in a available grid instead!"
-            );
+            notify("This grid is not available, place in a available grid instead!");
             return;
         }
 
@@ -69,9 +63,7 @@ function OfflineGamePage() {
             } else {
                 setTurn(turn === "X" ? "O" : "X");
                 if (newGridResults[field] != null) {
-                    setAvailableGrids(
-                        newGridResults.map((v, i) => (v == null ? i : null))
-                    );
+                    setAvailableGrids(newGridResults.map((v, i) => (v == null ? i : null)));
                 } else {
                     setAvailableGrids([field]);
                 }
@@ -84,9 +76,7 @@ function OfflineGamePage() {
     return (
         <div className="page-root">
             <h1>Super Tic-Tac-Toe</h1>
-            {gameState === GAMESTATE.PLAYING && (
-                <h3>It's player {turn}'s turn</h3>
-            )}
+            {gameState === GAMESTATE.PLAYING && <h3>It's player {turn}'s turn</h3>}
             {gameState === GAMESTATE.OVER && <h3>Player {turn} has won!</h3>}
             <div className="backdrop">
                 <SuperGrid

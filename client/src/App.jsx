@@ -4,6 +4,7 @@ import OfflineGamePage from "./pages/OfflineGamePage";
 import OnlineGamePage from "./pages/OnlineGamePage";
 import { SocketContext } from "./contexts/SocketContext";
 import { useState } from "react";
+import { NotificationProvider } from "./contexts/NotificationContext";
 
 const router = createBrowserRouter([
     { path: "/", element: <HomePage /> },
@@ -16,7 +17,9 @@ function App() {
 
     return (
         <SocketContext.Provider value={[socket, setSocket]}>
-            <RouterProvider router={router} />
+            <NotificationProvider>
+                <RouterProvider router={router} />
+            </NotificationProvider>
         </SocketContext.Provider>
     );
 }
