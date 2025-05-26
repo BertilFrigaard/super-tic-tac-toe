@@ -15,6 +15,8 @@ wss.on("connection", (socket) => {
     protocol.handleClient(socket);
 });
 
-server.listen(3001, () => {
-    console.log("Server is now listening on port 3001");
+app.use(express.static("../client/dist"));
+
+server.listen(3000, () => {
+    console.log("Server is now listening on port 3000");
 });
