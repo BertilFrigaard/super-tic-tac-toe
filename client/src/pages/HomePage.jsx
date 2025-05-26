@@ -91,9 +91,11 @@ function HomePage() {
                 };
             }
 
-            socket.onmessage = (msg) => {
-                console.log("Recieved: " + msg.data);
+            socket.onclose = () => {
+                navigate("/");
+            };
 
+            socket.onmessage = (msg) => {
                 const args = msg.data.split(";");
                 if (args[0] == "game-joined") {
                     setGameState(GAMESTATE.AWAITING_OPPONENT);
@@ -114,11 +116,11 @@ function HomePage() {
     return (
         <>
             <main>
-                <div className="section title-section">
-                    <h1>Super Tic-Tac-Toe</h1>
-                </div>
+                <h1 className="title">Super Tic-Tac-Toe</h1>
+                <h2 className="sub-title">Nine Boards - One Winner</h2>
                 <div className="section online-section">
-                    <h2>Play Online</h2>
+                    <h3>Play Online</h3>
+                    <p>Challenge players worldwide or invite a friend.</p>
                     <button
                         onClick={() => {
                             ifIdle(onCreateGameClick);
@@ -135,7 +137,8 @@ function HomePage() {
                     </button>
                 </div>
                 <div className="section offline-section">
-                    <h2>Play Offline</h2>
+                    <h3>Play Offline</h3>
+                    <p>Enjoy a game locally or practice your skills.</p>
                     <button
                         onClick={() => {
                             ifIdle(() => {
@@ -180,6 +183,8 @@ function HomePage() {
                                     onChange={(event) => {
                                         setJoinCode(event.target.value);
                                     }}
+                                    onSubmit={onJoinGameClick}
+                                    autoFocus
                                 ></input>
                                 <button onClick={onJoinGameClick}>Join</button>
                                 <button

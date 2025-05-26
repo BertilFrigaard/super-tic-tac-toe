@@ -194,6 +194,14 @@ function deleteClient(clientId) {
     clients.delete(clientId);
 }
 
+function deletePlayer(clientId) {
+    players.delete(clientId);
+}
+
+function deleteGame(gameId) {
+    games.delete(gameId);
+}
+
 function clientInGame(clientId, gameId = null) {
     if (gameId == null) {
         return players.has(clientId);
@@ -278,9 +286,25 @@ function generateJoinCode() {
     return randomString;
 }
 
+//DEV  DEV  DEV  DEV
+function getClients() {
+    return clients;
+}
+
+function getGames() {
+    return games;
+}
+
+function getPlayers() {
+    return players;
+}
+//DEV  DEV  DEV  DEV
+
 module.exports = {
     createClient,
     deleteClient,
+    deletePlayer,
+    deleteGame,
     clientInGame,
     createGame,
     linkClientToGame,
@@ -298,4 +322,7 @@ module.exports = {
     swapGameTurn,
     updateGridResults,
     updateWinner,
+    getClients,
+    getGames,
+    getPlayers,
 };

@@ -18,6 +18,8 @@ const {
     swapGameTurn,
     updateGridResults,
     updateWinner,
+    deletePlayer,
+    deleteGame,
 } = require("./game");
 
 function handleClient(socket) {
@@ -34,14 +36,25 @@ function handleClient(socket) {
     });
 
     socket.on("close", () => {
-        deleteClient();
-        console.log("Client closed");
+        if (clientInGame(clientId)) {
+            const gameId = getGameByClient(clientId);
+            const clients = getClientsByGame(gameId);
+            for (let curClientId of clients) {
+                deletePlayer(curClientId);
+                if (curClientId != clientId) {
+                    const curSocket = getSocketByClient(curClientId);
+                    if (curSocket) {
+                        curSocket.close();
+                    }
+                }
+            }
+            deleteGame(gameId);
+        }
+        deleteClient(clientId);
     });
 }
 
 function handleIdleMsg(socket, clientId, msg) {
-    console.log("Recieved: " + msg.toString());
-
     const args = msg.toString().split(";");
 
     if (args[0] == "create-game") {
@@ -86,9 +99,10 @@ function handleIdleMsg(socket, clientId, msg) {
 }
 
 function handleGameMsg(socket, clientId, msg) {
-    console.log("Recieved: " + msg.toString());
-
     const args = msg.toString().split(";");
+    if (!clientInGame(clientId)) {
+        socket.send("error; Error: Game dosen't exist");
+    }
     if (args[0] == "update") {
         sendGameUpdate(clientId, socket);
     }

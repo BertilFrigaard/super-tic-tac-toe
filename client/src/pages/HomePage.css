@@ -1,40 +1,61 @@
-.section {
-    background-color: rgb(255, 237, 194);
-    margin: 0 auto;
-    max-width: 50%;
-    border-radius: 5px;
+footer {
     text-align: center;
-}
-
-.title-section {
-    margin-top: 30px;
-    padding: 30px 0;
-}
-
-.offline-section,
-.online-section {
-    padding: 20px 0;
-    margin: 40px auto;
-}
-
-.section button {
-    border: 1px solid black;
-    border-radius: 5px;
-    padding: 5px;
-    font-size: large;
-    background-color: transparent;
-    margin: 0 10px;
-}
-
-.section button:hover {
-    background-color: rgba(0,0,0,0.1);
-    cursor: pointer;
 }
 
 main {
     min-height: 80vh;
 }
 
-footer {
+.section {
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+        0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    border-radius: 10px;
+    margin: 30px auto;
+    max-width: 500px;
+    padding: 40px;
+    text-align: center;
+}
+
+.section button {
+    border: none;
+    border-radius: 10px;
+    background-color: #3182ce;
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 10px;
+    padding: 15px 30px;
+}
+
+.section button:hover {
+    background-color: #256eb3;
+    cursor: pointer;
+}
+
+.section h3 {
+    color: black;
+    font-size: 30px;
+    margin: 0;
+}
+
+.section p {
+    color: rgb(92, 92, 92);
+    font-size: 20px;
+    margin: 15px 0 30px 0;
+    padding: 0 50px;
+}
+
+.sub-title {
+    color: rgb(57, 57, 57);
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.title {
+    font-weight: 900;
+    font-size: 50px;
+    margin-top: 30px;
+    margin-bottom: 0;
     text-align: center;
 }

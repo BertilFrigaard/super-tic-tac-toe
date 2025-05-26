@@ -88,12 +88,14 @@ function OfflineGamePage() {
                 <h3>It's player {turn}'s turn</h3>
             )}
             {gameState === GAMESTATE.OVER && <h3>Player {turn} has won!</h3>}
-            <SuperGrid
-                grids={grids}
-                availableGrids={availableGrids}
-                gridResults={gridResults}
-                onClick={handleClick}
-            />
+            <div className="backdrop">
+                <SuperGrid
+                    grids={grids}
+                    availableGrids={availableGrids}
+                    gridResults={gridResults}
+                    onClick={handleClick}
+                />
+            </div>
         </div>
     );
 }

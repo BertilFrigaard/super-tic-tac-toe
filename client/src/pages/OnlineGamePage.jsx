@@ -1,12 +1,14 @@
-import "./OfflineGamePage.css";
+import "./OnlineGamePage.css";
 
 import { useContext, useEffect, useState } from "react";
 import SuperGrid from "../components/SuperGrid";
 import { SocketContext } from "../contexts/SocketContext";
+import { useNavigate } from "react-router";
 
 const GAMESTATE = {
     PLAYING: 0,
     OVER: 1,
+    INTERRUPTED: 2,
 };
 
 function OnlineGamePage() {
@@ -19,10 +21,11 @@ function OnlineGamePage() {
     const [turn, setTurn] = useState(false);
     const [gameState, setGameState] = useState(GAMESTATE.PLAYING);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         if (!socket) {
-            setAvailableGrids([]);
-            notify("You have lost connection to the game!");
+            navigate("/");
             return;
         }
         socket.onmessage = (msg) => {
@@ -41,6 +44,11 @@ function OnlineGamePage() {
             }
         };
         socket.send("update");
+        socket.onclose = () => {
+            setGameState(GAMESTATE.INTERRUPTED);
+            setTurn(false);
+            notify("The game was interrupted and is now over");
+        };
     }, [socket]);
 
     const notify = (msg) => {
@@ -93,14 +101,21 @@ function OnlineGamePage() {
             {gameState === GAMESTATE.OVER && (
                 <h3>{turn ? "You have" : "Your opponent has"} won!</h3>
             )}
-            <SuperGrid
-                grids={getFilledGrids(grids, "X", "O")}
-                availableGrids={
-                    turn && gameState == GAMESTATE.PLAYING ? availableGrids : []
-                }
-                gridResults={getFilledGridResults(gridResults, "X", "O")}
-                onClick={handleClick}
-            />
+            {gameState === GAMESTATE.INTERRUPTED && (
+                <h3 className="error-txt">The game was interrupted</h3>
+            )}
+            <div className="backdrop">
+                <SuperGrid
+                    grids={getFilledGrids(grids, "X", "O")}
+                    availableGrids={
+                        turn && gameState == GAMESTATE.PLAYING
+                            ? availableGrids
+                            : []
+                    }
+                    gridResults={getFilledGridResults(gridResults, "X", "O")}
+                    onClick={handleClick}
+                />
+            </div>
         </div>
     );
 }
