@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import "./HomePage.css";
 import Popup from "../components/Popup";
-import { GAMESTATE, SOCKET_URL } from "../constants/GAMESTATE";
+import { SOCKET_URL } from "../constants/PRODUCTION";
+import { GAMESTATE } from "../constants/GAMESTATE";
 import { SocketContext } from "../contexts/SocketContext";
 import { useNavigate } from "react-router";
 import { UseNotification } from "../contexts/NotificationContext";
@@ -125,7 +126,7 @@ function HomePage() {
                     <button
                         onClick={() => {
                             ifIdle(onCreateGameClick, () => {
-                                notify("Loading");
+                                notify("Loading...");
                             });
                         }}
                     >
@@ -134,7 +135,7 @@ function HomePage() {
                     <button
                         onClick={() => {
                             ifIdle(onShowJoinPopupClick, () => {
-                                notify("Loading");
+                                notify("Loading...");
                             });
                         }}
                     >
@@ -148,7 +149,7 @@ function HomePage() {
                         onClick={() => {
                             ifIdle(() => {
                                 navigate("/PlayOffline", () => {
-                                    notify("Loading");
+                                    notify("Loading...");
                                 });
                             });
                         }}

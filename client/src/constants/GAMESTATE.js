@@ -7,5 +7,3 @@ export const GAMESTATE = {
     JOINING_GAME: 5,
     CANCELING: 6,
 };
-
-export const SOCKET_URL = "wss://bertilfrigaard.dk:443";
