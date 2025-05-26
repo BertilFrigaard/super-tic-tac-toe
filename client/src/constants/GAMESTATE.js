@@ -8,4 +8,4 @@ export const GAMESTATE = {
     CANCELING: 6,
 };
 
-export const SOCKET_URL = "ws://bertilfrigaard.dk:3000";
+export const SOCKET_URL = "wss://bertilfrigaard.dk:443";
