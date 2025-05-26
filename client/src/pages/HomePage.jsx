@@ -124,14 +124,18 @@ function HomePage() {
                     <p>Challenge players worldwide or invite a friend.</p>
                     <button
                         onClick={() => {
-                            ifIdle(onCreateGameClick);
+                            ifIdle(onCreateGameClick, () => {
+                                notify("Loading");
+                            });
                         }}
                     >
                         Create Game
                     </button>
                     <button
                         onClick={() => {
-                            ifIdle(onShowJoinPopupClick);
+                            ifIdle(onShowJoinPopupClick, () => {
+                                notify("Loading");
+                            });
                         }}
                     >
                         Join Game
@@ -143,7 +147,9 @@ function HomePage() {
                     <button
                         onClick={() => {
                             ifIdle(() => {
-                                navigate("/PlayOffline");
+                                navigate("/PlayOffline", () => {
+                                    notify("Loading");
+                                });
                             });
                         }}
                     >
