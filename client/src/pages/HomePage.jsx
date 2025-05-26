@@ -103,7 +103,6 @@ function HomePage() {
                     setGameState(GAMESTATE.AWAITING_OPPONENT);
                     setGameId(args[1]);
                 } else if (args[0] == "game-start") {
-                    notify("GAME STARTING");
                     navigate("/PlayOnline");
                 } else if (args[0] == "error") {
                     notify(args[1]);
