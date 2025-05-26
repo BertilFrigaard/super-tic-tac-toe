@@ -114,9 +114,7 @@ function handleGameMsg(socket, clientId, msg) {
             return;
         }
         if (grid < 0 || grid >= 9 || field < 0 || field >= 9) {
-            socket.send(
-                "error;Error: Something went wrong (Array out of bounds)"
-            );
+            socket.send("error;Error: Something went wrong (Array out of bounds)");
             return;
         }
         if (clientPlace(clientId, grid, field)) {

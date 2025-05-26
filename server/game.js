@@ -54,9 +54,7 @@ function updateAvailableGrids(gameId, field) {
     if (game.gridResults[field] == null) {
         game.availableGrids = [field];
     } else {
-        game.availableGrids = game.gridResults.map((v, i) =>
-            v == null ? i : null
-        );
+        game.availableGrids = game.gridResults.map((v, i) => (v == null ? i : null));
     }
 }
 
@@ -76,7 +74,6 @@ function updateGridResults(gameId) {
 function updateWinner(gameId) {
     const game = games.get(gameId);
     const winner = calculateWinner(game.gridResults);
-    console.log("winner: ", winner);
     if (winner != null) {
         game.turn = winner;
         game.gameState = GAMESTATE.OVER;
@@ -279,9 +276,7 @@ function generateJoinCode() {
     const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let randomString = "";
     for (let i = 0; i < 6; i++) {
-        randomString += characters.charAt(
-            Math.floor(Math.random() * characters.length)
-        );
+        randomString += characters.charAt(Math.floor(Math.random() * characters.length));
     }
     return randomString;
 }
